@@ -2,9 +2,15 @@ import { fetchRandomAddress } from '../src/features/address-autofill/address-sou
 import type { RandomAddressMessage } from '../src/features/address-autofill/types';
 import { createCheckoutLink } from '../src/features/link-extractor/checkout';
 import { fetchChatGptSession } from '../src/features/link-extractor/session';
-import type { ChatGptSessionMessage, CheckoutLinkMessage } from '../src/features/link-extractor/types';
+import type { ChatGptSessionMessage, ChatGptSessionResponse, CheckoutLinkMessage } from '../src/features/link-extractor/types';
 import type { OutlookOtpMessage, OutlookOtpResponse } from '../src/features/register/types';
 import type { SmsRelayFetchMessage, SmsRelayFetchResponse } from '../src/features/sms/types';
+
+type MessageSenderLike = {
+  tab?: {
+    id?: number;
+  };
+};
 
 const DEFAULT_OUTLOOK_API_BASE = 'http://127.0.0.1:8787';
 const DEFAULT_TIMEOUT_MS = 180_000;
@@ -21,13 +27,13 @@ const ASSISTANT_URL_PREFIXES = [
 export default defineBackground(() => {
   installAssistantInjector();
 
-  browser.runtime.onMessage.addListener((message: unknown) => {
+  browser.runtime.onMessage.addListener((message: unknown, sender) => {
     if (!isOutlookOtpMessage(message)) {
       if (isCheckoutLinkMessage(message)) {
         return createCheckoutLink(message.raw, message.options);
       }
       if (isChatGptSessionMessage(message)) {
-        return fetchChatGptSession();
+        return fetchChatGptSessionForSender(sender);
       }
       if (isRandomAddressMessage(message)) {
         return fetchRandomAddress(message.countryCode, message.city);
@@ -41,6 +47,108 @@ export default defineBackground(() => {
     return waitForOutlookOtp(message);
   });
 });
+
+async function fetchChatGptSessionForSender(sender: MessageSenderLike): Promise<ChatGptSessionResponse> {
+  const tabId = sender.tab?.id;
+  if (typeof tabId !== 'number') {
+    return fetchChatGptSession();
+  }
+
+  try {
+    const results = await browser.scripting.executeScript({
+      target: { tabId },
+      func: fetchChatGptSessionInTab,
+    });
+    const response = results[0]?.result;
+    if (isChatGptSessionResponse(response)) {
+      return response;
+    }
+    return {
+      ok: false,
+      message: '当前标签页返回的 ChatGPT session 结果无效',
+    };
+  } catch (error) {
+    return {
+      ok: false,
+      message: `无法在当前标签页读取 ChatGPT session：${String(error)}`,
+    };
+  }
+}
+
+async function fetchChatGptSessionInTab(): Promise<ChatGptSessionResponse> {
+  const sessionUrl = 'https://chatgpt.com/api/auth/session';
+  let response: Response;
+  try {
+    response = await fetch(sessionUrl, {
+      method: 'GET',
+      headers: { Accept: 'application/json' },
+      credentials: 'include',
+      cache: 'no-store',
+    });
+  } catch (error) {
+    return fail(`无法请求 ChatGPT session：${String(error)}`);
+  }
+
+  const text = await response.text();
+  const data = parseJson(text);
+  if (!response.ok) {
+    return fail(`ChatGPT session HTTP ${response.status}：${shorten(text || response.statusText)}`);
+  }
+
+  if (!isRecord(data)) {
+    return fail('ChatGPT session 响应不是 JSON 对象');
+  }
+
+  const session = extractSessionInfo(data);
+  if (!session.accessToken) {
+    return {
+      ok: false,
+      message: session.email ? '已读取账号信息，但 session 内没有 accessToken' : '未读取到登录 session',
+      session,
+    };
+  }
+
+  return {
+    ok: true,
+    message: '已从当前标签页读取 ChatGPT session',
+    session,
+  };
+
+  function extractSessionInfo(data: Record<string, unknown>) {
+    const user = isRecord(data.user) ? data.user : {};
+    const account = isRecord(data.account) ? data.account : {};
+    return {
+      email: stringValue(user.email),
+      planType: stringValue(account.planType) || stringValue(account.plan_type),
+      accessToken: stringValue(data.accessToken),
+      fetchedAt: Date.now(),
+    };
+  }
+
+  function parseJson(text: string): unknown {
+    try {
+      return JSON.parse(text);
+    } catch {
+      return {};
+    }
+  }
+
+  function stringValue(value: unknown): string {
+    return typeof value === 'string' ? value.trim() : '';
+  }
+
+  function fail(message: string) {
+    return { ok: false, message };
+  }
+
+  function shorten(text: string, limit = 400): string {
+    return String(text || '').replace(/\s+/g, ' ').slice(0, limit);
+  }
+
+  function isRecord(value: unknown): value is Record<string, unknown> {
+    return Boolean(value && typeof value === 'object');
+  }
+}
 
 function installAssistantInjector(): void {
   browser.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
@@ -187,6 +295,15 @@ function isChatGptSessionMessage(message: unknown): message is ChatGptSessionMes
     message &&
       typeof message === 'object' &&
       (message as ChatGptSessionMessage).type === 'opx:fetch-chatgpt-session',
+  );
+}
+
+function isChatGptSessionResponse(value: unknown): value is ChatGptSessionResponse {
+  return Boolean(
+    value &&
+      typeof value === 'object' &&
+      typeof (value as ChatGptSessionResponse).ok === 'boolean' &&
+      typeof (value as ChatGptSessionResponse).message === 'string',
   );
 }
 
