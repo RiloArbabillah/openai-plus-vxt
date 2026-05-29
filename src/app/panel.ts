@@ -21,8 +21,8 @@ export function createPanel(root: ShadowRoot, registerController: RegisterContro
   const collapseButton = document.createElement('button');
   collapseButton.className = 'opx-collapse-toggle';
   collapseButton.type = 'button';
-  collapseButton.textContent = '收起';
-  collapseButton.title = '收起侧边栏';
+  collapseButton.textContent = 'Collapse';
+  collapseButton.title = 'Collapse sidebar';
   collapseButton.setAttribute('aria-expanded', 'true');
 
   const panel = document.createElement('aside');
@@ -34,18 +34,18 @@ export function createPanel(root: ShadowRoot, registerController: RegisterContro
   const tabs = document.createElement('div');
   tabs.className = 'opx-tabs';
 
-  const registerTab = createTab('register', '注册');
-  const linkTab = createTab('link', '提链接');
-  const addressTab = createTab('address', '地址');
-  const smsTab = createTab('sms', '接码');
+  const registerTab = createTab('register', 'Register');
+  const linkTab = createTab('link', 'Links');
+  const addressTab = createTab('address', 'Address');
+  const smsTab = createTab('sms', 'SMS');
   tabs.append(registerTab, linkTab, addressTab, smsTab);
 
   const settingsButton = document.createElement('button');
   settingsButton.className = 'opx-icon-button';
   settingsButton.type = 'button';
   settingsButton.textContent = '⚙';
-  settingsButton.title = '打开设置';
-  settingsButton.setAttribute('aria-label', '打开设置');
+  settingsButton.title = 'Open settings';
+  settingsButton.setAttribute('aria-label', 'Open settings');
 
   const state = document.createElement('div');
   state.className = 'opx-state';
@@ -70,8 +70,8 @@ export function createPanel(root: ShadowRoot, registerController: RegisterContro
 
   const setCollapsed = (collapsed: boolean) => {
     shell.classList.toggle('is-collapsed', collapsed);
-    collapseButton.textContent = collapsed ? '展开' : '收起';
-    collapseButton.title = collapsed ? '展开侧边栏' : '收起侧边栏';
+    collapseButton.textContent = collapsed ? 'Expand' : 'Collapse';
+    collapseButton.title = collapsed ? 'Expand sidebar' : 'Collapse sidebar';
     collapseButton.setAttribute('aria-expanded', collapsed ? 'false' : 'true');
   };
 
@@ -134,12 +134,12 @@ function getStateLabel(activeTab: FeatureTab, registerController: RegisterContro
     return registerController.getPageState().label;
   }
   if (activeTab === 'link') {
-    return '提链接：ChatGPT session';
+    return 'Links: ChatGPT session';
   }
   if (activeTab === 'address') {
-    return '地址：随机资料';
+    return 'Address: random profile';
   }
-  return '接码：短信验证码';
+  return 'SMS: verification codes';
 }
 
 function createView(): HTMLElement {

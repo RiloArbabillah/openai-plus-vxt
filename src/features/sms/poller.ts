@@ -30,7 +30,7 @@ export async function fetchSmsRelayCode(target: SmsRelayTarget): Promise<SmsPoll
     return {
       kind: 'error',
       target,
-      message: `请求失败：${errorMessage(error)}`,
+      message: `Request failed: ${errorMessage(error)}`,
     };
   }
 
@@ -38,7 +38,7 @@ export async function fetchSmsRelayCode(target: SmsRelayTarget): Promise<SmsPoll
     return {
       kind: 'error',
       target,
-      message: response?.message || 'API 返回结果无效',
+      message: response?.message || 'The API returned an invalid result',
     };
   }
 
@@ -54,7 +54,7 @@ export async function fetchSmsRelayCode(target: SmsRelayTarget): Promise<SmsPoll
     return {
       kind: 'empty',
       target,
-      message: message || response.data || response.message || '暂无短信',
+      message: message || response.data || response.message || 'No SMS yet',
     };
   }
 

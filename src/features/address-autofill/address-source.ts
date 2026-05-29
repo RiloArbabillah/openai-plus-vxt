@@ -3,38 +3,38 @@ import type { AddressCountryOption, AddressProfile, RandomAddressResponse } from
 const MEIGUO_ADDRESS_ENDPOINT = 'https://www.meiguodizhi.com/api/v1/dz';
 
 export const ADDRESS_COUNTRY_OPTIONS: AddressCountryOption[] = [
-  { code: 'US', label: '美国', path: '/' },
-  { code: 'CA', label: '加拿大', path: '/ca-address' },
-  { code: 'AU', label: '澳大利亚', path: '/au-address' },
-  { code: 'JP', label: '日本', path: '/jp-address' },
-  { code: 'TW', label: '台湾', path: '/tw-address' },
-  { code: 'KR', label: '韩国', path: '/kr-address' },
-  { code: 'HK', label: '香港', path: '/hk-address' },
-  { code: 'GB', label: '英国', path: '/uk-address' },
-  { code: 'DE', label: '德国', path: '/de-address' },
-  { code: 'SG', label: '新加坡', path: '/sg-address' },
-  { code: 'FR', label: '法国', path: '/fr-address' },
-  { code: 'IT', label: '意大利', path: '/it-address' },
-  { code: 'ES', label: '西班牙', path: '/es-address' },
-  { code: 'NL', label: '荷兰', path: '/nl-address' },
-  { code: 'MY', label: '马来西亚', path: '/my-address' },
-  { code: 'RU', label: '俄罗斯', path: '/ru-address' },
-  { code: 'CN', label: '中国', path: '/cn-address' },
-  { code: 'TH', label: '泰国', path: '/th-address' },
-  { code: 'PH', label: '菲律宾', path: '/ph-address' },
-  { code: 'AR', label: '阿根廷', path: '/ar-address' },
-  { code: 'TR', label: '土耳其', path: '/tr-address' },
-  { code: 'VN', label: '越南', path: '/vn-address' },
+  { code: 'US', label: 'United States', path: '/' },
+  { code: 'CA', label: 'Canada', path: '/ca-address' },
+  { code: 'AU', label: 'Australia', path: '/au-address' },
+  { code: 'JP', label: 'Japan', path: '/jp-address' },
+  { code: 'TW', label: 'Taiwan', path: '/tw-address' },
+  { code: 'KR', label: 'South Korea', path: '/kr-address' },
+  { code: 'HK', label: 'Hong Kong', path: '/hk-address' },
+  { code: 'GB', label: 'United Kingdom', path: '/uk-address' },
+  { code: 'DE', label: 'Germany', path: '/de-address' },
+  { code: 'SG', label: 'Singapore', path: '/sg-address' },
+  { code: 'FR', label: 'France', path: '/fr-address' },
+  { code: 'IT', label: 'Italy', path: '/it-address' },
+  { code: 'ES', label: 'Spain', path: '/es-address' },
+  { code: 'NL', label: 'Netherlands', path: '/nl-address' },
+  { code: 'MY', label: 'Malaysia', path: '/my-address' },
+  { code: 'RU', label: 'Russia', path: '/ru-address' },
+  { code: 'CN', label: 'China', path: '/cn-address' },
+  { code: 'TH', label: 'Thailand', path: '/th-address' },
+  { code: 'PH', label: 'Philippines', path: '/ph-address' },
+  { code: 'AR', label: 'Argentina', path: '/ar-address' },
+  { code: 'TR', label: 'Turkey', path: '/tr-address' },
+  { code: 'VN', label: 'Vietnam', path: '/vn-address' },
 ];
 
 const FALLBACK_ADDRESSES = [
-  { countryCode: 'US', countryLabel: '美国', countryPath: '/', state: 'CA', stateFull: 'California', city: 'Mountain View', postalCode: '94040', line1: '2685 California Street' },
-  { countryCode: 'CA', countryLabel: '加拿大', countryPath: '/ca-address', state: 'Ontario', stateFull: 'Ontario', city: 'Toronto', postalCode: 'M4W 1J7', line1: '909 Yonge Street' },
-  { countryCode: 'AU', countryLabel: '澳大利亚', countryPath: '/au-address', state: 'NSW', stateFull: 'New South Wales', city: 'Sydney', postalCode: '2000', line1: '25 Market Street' },
-  { countryCode: 'GB', countryLabel: '英国', countryPath: '/uk-address', state: 'England', stateFull: 'England', city: 'London', postalCode: 'EC3C 6SB', line1: '78 Wardour St' },
-  { countryCode: 'DE', countryLabel: '德国', countryPath: '/de-address', state: 'Berlin', stateFull: 'Berlin', city: 'Berlin', postalCode: '10115', line1: 'Rosenthaler Str. 89' },
-  { countryCode: 'JP', countryLabel: '日本', countryPath: '/jp-address', state: 'Tokyo', stateFull: 'Tokyo', city: 'Tokyo', postalCode: '124-0006', line1: 'Horikiri, Katsushika-ku' },
-  { countryCode: 'SG', countryLabel: '新加坡', countryPath: '/sg-address', state: 'Singapore', stateFull: 'Singapore', city: 'Singapore', postalCode: '039594', line1: '3 Temasek Boulevard' },
+  { countryCode: 'US', countryLabel: 'United States', countryPath: '/', state: 'CA', stateFull: 'California', city: 'Mountain View', postalCode: '94040', line1: '2685 California Street' },
+  { countryCode: 'CA', countryLabel: 'Canada', countryPath: '/ca-address', state: 'Ontario', stateFull: 'Ontario', city: 'Toronto', postalCode: 'M4W 1J7', line1: '909 Yonge Street' },
+  { countryCode: 'AU', countryLabel: 'Australia', countryPath: '/au-address', state: 'NSW', stateFull: 'New South Wales', city: 'Sydney', postalCode: '2000', line1: '25 Market Street' },
+  { countryCode: 'GB', countryLabel: 'United Kingdom', countryPath: '/uk-address', state: 'England', stateFull: 'England', city: 'London', postalCode: 'EC3C 6SB', line1: '78 Wardour St' },
+  { countryCode: 'DE', countryLabel: 'Germany', countryPath: '/de-address', state: 'Berlin', stateFull: 'Berlin', city: 'Berlin', postalCode: '10115', line1: 'Rosenthaler Str. 89' },
+  { countryCode: 'JP', countryLabel: 'Japan', countryPath: '/jp-address', state: 'Tokyo', stateFull: 'Tokyo', city: 'Tokyo', postalCode: '124-0006', line1: 'Horikiri, Katsushika-ku' },
+  { countryCode: 'SG', countryLabel: 'Singapore', countryPath: '/sg-address', state: 'Singapore', stateFull: 'Singapore', city: 'Singapore', postalCode: '039594', line1: '3 Temasek Boulevard' },
 ];
 
 const FIRST_NAMES = ['Alex', 'Blake', 'Casey', 'Drew', 'Evan', 'Jamie', 'Jordan', 'Morgan', 'Riley', 'Taylor'];
@@ -47,14 +47,14 @@ export async function fetchRandomAddress(countryCode?: string, city?: string): P
     const address = await fetchMeiguoAddress(country, normalizedCity);
     return {
       ok: true,
-      message: `已获取 ${address.countryLabel} ${address.city} 地址`,
+      message: `Loaded an address for ${address.countryLabel}, ${address.city}`,
       address,
     };
   } catch (error) {
     const address = createFallbackAddress(country, normalizedCity);
     return {
       ok: true,
-      message: `地址站点暂不可用，已使用内置备用地址：${errorMessage(error)}`,
+      message: `The address site is temporarily unavailable, so a built-in fallback address was used: ${errorMessage(error)}`,
       address,
     };
   }

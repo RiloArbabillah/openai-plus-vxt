@@ -46,18 +46,18 @@ export function parseSmsRelayTargets(input: string): ParsedSmsTargets {
   lines.forEach((line, index) => {
     const separatorIndex = line.indexOf('----');
     if (separatorIndex < 0) {
-      errors.push(`第 ${index + 1} 行缺少 ---- 分隔符`);
+      errors.push(`Line ${index + 1} is missing the ---- separator`);
       return;
     }
 
     const phone = line.slice(0, separatorIndex).trim();
     const url = line.slice(separatorIndex + 4).trim();
     if (!phone || !url) {
-      errors.push(`第 ${index + 1} 行号码或 API 链接为空`);
+      errors.push(`Line ${index + 1} has an empty phone number or API link`);
       return;
     }
     if (!isHttpUrl(url)) {
-      errors.push(`第 ${index + 1} 行 API 链接不是 http/https 地址`);
+      errors.push(`Line ${index + 1} API link is not an http/https URL`);
       return;
     }
 

@@ -66,13 +66,13 @@ export async function fillPaypalAddressNow(
   allowRetry = true,
 ): Promise<{ ok: boolean; filled: number; message: string; countryChanged: boolean }> {
   if (!isPaypalSignupPage()) {
-    return { ok: false, filled: 0, message: '当前不是 PayPal 注册支付页', countryChanged: false };
+    return { ok: false, filled: 0, message: 'The current page is not the PayPal signup payment page', countryChanged: false };
   }
 
   const settings = await loadAddressAutofillSettings();
   const targetAddress = address || await getPageAddress(settings);
   if (!targetAddress) {
-    return { ok: false, filled: 0, message: '没有可用地址资料', countryChanged: false };
+    return { ok: false, filled: 0, message: 'No address data is available', countryChanged: false };
   }
 
   rememberSessionAddress(targetAddress);
@@ -99,10 +99,10 @@ export async function fillPaypalAddressNow(
     filled: result.filled,
     countryChanged: result.countryChanged,
     message: result.countryChanged
-      ? `已选择 PayPal 国家：${targetAddress.countryCode}，等待页面重新加载`
+      ? `Selected PayPal country: ${targetAddress.countryCode}. Waiting for the page to reload`
       : result.filled > 0
-        ? `已填写 PayPal ${result.filled} 项`
-        : '未找到可填写的 PayPal 字段',
+          ? `Filled ${result.filled} PayPal field(s)`
+          : 'No fillable PayPal fields were found',
   };
 }
 
@@ -288,7 +288,7 @@ function renderPasswordEmailNote(email: string): void {
   fillPasswordField(email);
 
   const noteId = 'opx-paypal-password-note';
-  const text = `当前密码和邮箱一致（${email}）`;
+  const text = `The current password matches the email (${email})`;
   let note = document.getElementById(noteId);
   if (!note) {
     note = document.createElement('div');
@@ -687,7 +687,7 @@ function createRandomFillWidget(): HTMLElement {
 
   const button = document.createElement('button');
   button.type = 'button';
-  button.textContent = '随机输入';
+  button.textContent = 'Random fill';
   Object.assign(button.style, {
     appearance: 'none',
     border: '0',
@@ -720,12 +720,12 @@ function createRandomFillWidget(): HTMLElement {
 
 async function fetchFreshAddressAndFill(button: HTMLButtonElement, status: HTMLElement): Promise<void> {
   button.disabled = true;
-  button.textContent = '获取中...';
+  button.textContent = 'Loading...';
   Object.assign(button.style, {
     cursor: 'wait',
     opacity: '0.72',
   });
-  status.textContent = '正在获取新资料';
+  status.textContent = 'Loading new profile';
 
   try {
     const settings = await loadAddressAutofillSettings();
@@ -736,7 +736,7 @@ async function fetchFreshAddressAndFill(button: HTMLButtonElement, status: HTMLE
     });
 
     if (!isRandomAddressResponse(response) || !response.ok || !response.address) {
-      status.textContent = response?.message || '获取失败';
+      status.textContent = response?.message || 'Load failed';
       return;
     }
 
@@ -745,15 +745,15 @@ async function fetchFreshAddressAndFill(button: HTMLButtonElement, status: HTMLE
     await saveAddressAutofillSettings({ lastAddress: response.address });
     const result = await fillPaypalAddressNow(response.address, true, false);
     status.textContent = result.countryChanged
-      ? '已切换国家，刷新后继续填写'
+      ? 'Country changed. Continue filling after reload'
       : result.ok
-        ? `已随机输入 ${result.filled} 项`
+        ? `Randomly filled ${result.filled} field(s)`
         : result.message;
   } catch (error) {
-    status.textContent = `失败：${errorMessage(error)}`;
+    status.textContent = `Failed: ${errorMessage(error)}`;
   } finally {
     button.disabled = false;
-    button.textContent = '随机输入';
+    button.textContent = 'Random fill';
     Object.assign(button.style, {
       cursor: 'pointer',
       opacity: '1',

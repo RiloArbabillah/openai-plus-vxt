@@ -19,7 +19,7 @@ export function isChatGptLoginPage(): boolean {
 export async function fillEmailAndContinue(email: string): Promise<ActionResult> {
   const input = findFirst<HTMLInputElement>(EMAIL_SELECTORS);
   if (!input) {
-    return fail('没有找到邮箱输入框');
+    return fail('Email input was not found');
   }
 
   setNativeValue(input, email);
@@ -30,7 +30,7 @@ export async function fillEmailAndContinue(email: string): Promise<ActionResult>
 
   const button = findSubmitButton();
   if (!button) {
-    return fail('没有找到继续按钮');
+    return fail('Continue button was not found');
   }
 
   if (button.disabled) {
@@ -38,11 +38,11 @@ export async function fillEmailAndContinue(email: string): Promise<ActionResult>
   }
 
   if (button.disabled) {
-    return fail('继续按钮仍然不可点击');
+    return fail('Continue button is still not clickable');
   }
 
   button.click();
-  return ok('已填入邮箱并点击继续');
+  return ok('Filled the email and clicked continue');
 }
 
 function findSubmitButton(): HTMLButtonElement | null {

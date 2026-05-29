@@ -24,17 +24,17 @@ export function createVersionNotice(): VersionNoticeHandle {
   const downloadButton = document.createElement('button');
   downloadButton.className = 'opx-mini-button';
   downloadButton.type = 'button';
-  downloadButton.textContent = '下载更新';
+  downloadButton.textContent = 'Download update';
 
   const releaseButton = document.createElement('button');
   releaseButton.className = 'opx-mini-button opx-mini-button-secondary';
   releaseButton.type = 'button';
-  releaseButton.textContent = '更新说明';
+  releaseButton.textContent = 'Release notes';
 
   const ignoreButton = document.createElement('button');
   ignoreButton.className = 'opx-mini-button opx-mini-button-secondary';
   ignoreButton.type = 'button';
-  ignoreButton.textContent = '忽略';
+  ignoreButton.textContent = 'Ignore';
 
   actions.append(downloadButton, releaseButton, ignoreButton);
   notice.append(title, body, actions);
@@ -84,7 +84,7 @@ function renderResult(
     return;
   }
 
-  title.textContent = `发现新版本 v${result.latest.version}`;
+  title.textContent = `New version found: v${result.latest.version}`;
   body.textContent = buildBody(result.currentVersion, result.latest);
   notice.hidden = false;
 }
@@ -96,6 +96,6 @@ function buildBody(currentVersion: string, latest: ReleaseVersionInfo): string {
     .filter(Boolean)
     .slice(0, 2)
     .join(' / ');
-  const prefix = `当前 v${currentVersion}，最新 ${latest.tagName || `v${latest.version}`}`;
-  return notes ? `${prefix}。${notes}` : prefix;
+  const prefix = `Current v${currentVersion}, latest ${latest.tagName || `v${latest.version}`}`;
+  return notes ? `${prefix}. ${notes}` : prefix;
 }

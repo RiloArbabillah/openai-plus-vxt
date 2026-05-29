@@ -22,18 +22,18 @@ export function createSettingsDialog(options: SettingsDialogOptions = {}): Setti
   dialog.className = 'opx-settings-dialog';
   dialog.setAttribute('role', 'dialog');
   dialog.setAttribute('aria-modal', 'true');
-  dialog.setAttribute('aria-label', '插件设置');
+  dialog.setAttribute('aria-label', 'Extension settings');
 
   const header = document.createElement('div');
   header.className = 'opx-settings-header';
   const titleGroup = document.createElement('div');
   titleGroup.className = 'opx-settings-title';
   const title = document.createElement('strong');
-  title.textContent = '设置';
+  title.textContent = 'Settings';
   const version = document.createElement('span');
   version.className = 'opx-version-badge';
   version.textContent = `v${browser.runtime.getManifest().version}`;
-  const closeButton = createIconButton('×', '关闭设置');
+  const closeButton = createIconButton('×', 'Close settings');
   titleGroup.append(title, version);
   header.append(titleGroup, closeButton);
 
@@ -47,30 +47,30 @@ export function createSettingsDialog(options: SettingsDialogOptions = {}): Setti
 
   const payOpenAiItem = createSettingItem(
     payOpenAiCheckbox,
-    'OpenAI 支付页自动填写',
-    '用于 pay.openai.com/c/pay 页面，填写姓名、国家、地址、邮编、电话并勾选条款。',
+    'OpenAI payment page autofill',
+    'Used on pay.openai.com/c/pay to fill name, country, address, postal code, phone number, and accept the terms.',
   );
   const payPalSignupItem = createSettingItem(
     payPalSignupCheckbox,
-    'PayPal 注册页自动填写',
-    '用于 paypal.com/checkoutweb/signup 页面，填写国家、邮箱、卡资料、姓名、地址和密码提示。',
+    'PayPal signup page autofill',
+    'Used on paypal.com/checkoutweb/signup to fill country, email, card details, name, address, and password hint.',
   );
 
   const checkUpdateButton = document.createElement('button');
   checkUpdateButton.className = 'opx-external-link-button';
   checkUpdateButton.type = 'button';
-  checkUpdateButton.title = '立即检查 GitHub Release 最新版本';
-  checkUpdateButton.textContent = '检测更新';
+  checkUpdateButton.title = 'Check the latest GitHub Release now';
+  checkUpdateButton.textContent = 'Check for updates';
 
   const tgGroupButton = document.createElement('button');
   tgGroupButton.className = 'opx-external-link-button';
   tgGroupButton.type = 'button';
-  tgGroupButton.title = '打开 TG 群组';
-  tgGroupButton.append(createTelegramIcon(), document.createTextNode('TG 群组：t.me/fuck_open'));
+  tgGroupButton.title = 'Open Telegram group';
+  tgGroupButton.append(createTelegramIcon(), document.createTextNode('Telegram group: t.me/fuck_open'));
 
   const hint = document.createElement('div');
   hint.className = 'opx-hint';
-  hint.textContent = '国家、城市和获取地址在“地址”tab 中操作。';
+  hint.textContent = 'Country, city, and address fetching are managed in the Address tab.';
 
   const status = document.createElement('div');
   status.className = 'opx-status';
@@ -87,27 +87,27 @@ export function createSettingsDialog(options: SettingsDialogOptions = {}): Setti
 
   payOpenAiCheckbox.addEventListener('change', async () => {
     await saveAddressAutofillSettings({ payOpenAiEnabled: payOpenAiCheckbox.checked });
-    setStatus(status, '设置已保存', 'ok');
+    setStatus(status, 'Settings saved', 'ok');
   });
   payPalSignupCheckbox.addEventListener('change', async () => {
     await saveAddressAutofillSettings({ payPalSignupEnabled: payPalSignupCheckbox.checked });
-    setStatus(status, '设置已保存', 'ok');
+    setStatus(status, 'Settings saved', 'ok');
   });
   tgGroupButton.addEventListener('click', () => {
     window.open(TG_GROUP_URL, '_blank', 'noopener,noreferrer');
   });
   checkUpdateButton.addEventListener('click', async () => {
     checkUpdateButton.disabled = true;
-    setStatus(status, '正在检测 GitHub 最新版本...', 'pending');
+    setStatus(status, 'Checking the latest GitHub version...', 'pending');
     try {
       const result = await checkLatestVersion(true);
       await options.onVersionChecked?.();
       if (result.latest && result.updateAvailable) {
-        setStatus(status, `发现新版本 v${result.latest.version}，顶部已显示更新提示`, 'ok');
+        setStatus(status, `A new version v${result.latest.version} is available. An update notice is now shown at the top.`, 'ok');
       } else if (result.latest) {
-        setStatus(status, `当前已是最新版本 v${result.currentVersion}`, 'ok');
+        setStatus(status, `You are already on the latest version v${result.currentVersion}`, 'ok');
       } else {
-        setStatus(status, result.error || '暂未找到可用 Release', 'pending');
+        setStatus(status, result.error || 'No available release was found yet', 'pending');
       }
     } catch (error) {
       setStatus(status, error instanceof Error ? error.message : String(error), 'error');
@@ -121,7 +121,7 @@ export function createSettingsDialog(options: SettingsDialogOptions = {}): Setti
     payOpenAiCheckbox.checked = settings.payOpenAiEnabled;
     payPalSignupCheckbox.checked = settings.payPalSignupEnabled;
     const enabledCount = Number(settings.payOpenAiEnabled) + Number(settings.payPalSignupEnabled);
-    setStatus(status, enabledCount > 0 ? `已开启 ${enabledCount} 项自动填写` : '自动填写未开启', enabledCount > 0 ? 'ok' : 'pending');
+    setStatus(status, enabledCount > 0 ? `${enabledCount} autofill option(s) enabled` : 'Autofill is disabled', enabledCount > 0 ? 'ok' : 'pending');
   };
 
   return {

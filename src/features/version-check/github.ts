@@ -41,7 +41,7 @@ export async function checkLatestVersion(force = false): Promise<VersionCheckRes
         latest: null,
         updateAvailable: false,
         ignored: false,
-        error: '当前仓库还没有 GitHub Release',
+        error: 'This repository does not have any GitHub Releases yet',
       };
     }
 

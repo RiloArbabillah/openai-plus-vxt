@@ -30,15 +30,15 @@ export const DEFAULT_CHECKOUT_OPTIONS: CheckoutOptions = {
 export function extractAccessToken(raw: string): string {
   const text = String(raw || '').trim();
   if (!text) {
-    throw new Error('请输入包含 accessToken 的 JSON 或字符串');
+    throw new Error('Enter JSON or text that contains an accessToken');
   }
 
   const token = extractFromJson(text) || extractFromAccessTokenField(text) || extractFirstJwt(text);
   if (!token) {
-    throw new Error('未找到 accessToken');
+    throw new Error('accessToken was not found');
   }
   if (token.split('.').length !== 3) {
-    throw new Error('accessToken 格式不正确');
+    throw new Error('Invalid accessToken format');
   }
   return token;
 }
@@ -88,7 +88,7 @@ export async function createCheckoutLink(raw: string, optionsInput: unknown): Pr
       credentials: 'omit',
     });
   } catch (error) {
-    return fail(`ChatGPT checkout 请求失败：${String(error)}`);
+    return fail(`ChatGPT checkout request failed: ${String(error)}`);
   }
 
   const text = await response.text();
@@ -98,18 +98,18 @@ export async function createCheckoutLink(raw: string, optionsInput: unknown): Pr
   }
 
   if (!isRecord(data)) {
-    return fail('ChatGPT checkout 响应不是 JSON 对象');
+    return fail('The ChatGPT checkout response is not a JSON object');
   }
 
   const result = extractCheckoutResult(data, checkoutOptions);
   const link = selectOutputLink(result, checkoutOptions.uiMode);
   if (!link) {
-    return fail(`未找到订阅链接，响应字段：${Object.keys(data).slice(0, 12).join(', ') || '空'}`);
+    return fail(`Checkout link not found. Response keys: ${Object.keys(data).slice(0, 12).join(', ') || 'empty'}`);
   }
 
   return {
     ok: true,
-    message: checkoutOptions.uiMode === 'hosted' ? '长链接生成成功' : '短链接生成成功',
+    message: checkoutOptions.uiMode === 'hosted' ? 'Long link generated successfully' : 'Short link generated successfully',
     url: link,
     link,
     longUrl: result.providerUrl,
@@ -173,7 +173,7 @@ function normalizeRegion(value: unknown): CheckoutRegion {
 function normalizeSeatQuantity(value: unknown): number {
   const quantity = Number(value || DEFAULT_CHECKOUT_OPTIONS.seatQuantity);
   if (!Number.isInteger(quantity) || quantity < 1) {
-    throw new Error('team_plan_data.seat_quantity 必须是大于 0 的整数');
+    throw new Error('team_plan_data.seat_quantity must be an integer greater than 0');
   }
   return quantity;
 }
@@ -348,7 +348,7 @@ function extractResponseError(data: unknown, text: string): string {
     }
   }
   if (!message) {
-    message = shorten(text || '请求失败');
+    message = shorten(text || 'Request failed');
   }
   return explainStripeCurrencyError(message);
 }
@@ -359,9 +359,9 @@ function explainStripeCurrencyError(message: string): string {
   }
 
   return [
-    'Stripe 限制：同一 customer 不能混用不同币种。',
-    '这个账号当前已有 USD 订阅/会话，切到日本会请求 JPY，因此被 Stripe 拒绝。',
-    '请改用没有现有订阅的账号，或者切回美国区域后再生成。',
+    'Stripe limitation: the same customer cannot mix different currencies.',
+    'This account already has a USD subscription/session. Switching to Japan requests JPY, so Stripe rejects it.',
+    'Use an account without an existing subscription, or switch back to the US region before generating again.',
   ].join(' ');
 }
 

@@ -44,10 +44,10 @@ export async function fillAboutYouAndCreate(): Promise<ActionResult> {
   const ageInput = findAgeInput(nameInput);
 
   if (!nameInput) {
-    return fail('没有找到全名输入框');
+    return fail('Full name input was not found');
   }
   if (!ageInput) {
-    return fail('没有找到年龄输入框');
+    return fail('Age input was not found');
   }
 
   const name = randomName();
@@ -65,7 +65,7 @@ export async function fillAboutYouAndCreate(): Promise<ActionResult> {
 
   const button = findCreateButton();
   if (!button) {
-    return fail('没有找到完成账户创建按钮');
+    return fail('Create account button was not found');
   }
 
   if (button.disabled) {
@@ -73,11 +73,11 @@ export async function fillAboutYouAndCreate(): Promise<ActionResult> {
   }
 
   if (button.disabled) {
-    return fail('完成账户创建按钮仍然不可点击');
+    return fail('Create account button is still not clickable');
   }
 
   button.click();
-  return ok(`已填写 ${name} / ${age} 并点击创建`);
+  return ok(`Filled ${name} / ${age} and clicked create`);
 }
 
 function findNameInput(): HTMLInputElement | null {

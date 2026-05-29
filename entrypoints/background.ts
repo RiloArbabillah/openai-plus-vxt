@@ -65,12 +65,12 @@ async function fetchChatGptSessionForSender(sender: MessageSenderLike): Promise<
     }
     return {
       ok: false,
-      message: '当前标签页返回的 ChatGPT session 结果无效',
+      message: 'The current tab returned an invalid ChatGPT session result',
     };
   } catch (error) {
     return {
       ok: false,
-      message: `无法在当前标签页读取 ChatGPT session：${String(error)}`,
+      message: `Failed to read the ChatGPT session from the current tab: ${String(error)}`,
     };
   }
 }
@@ -86,7 +86,7 @@ async function fetchChatGptSessionInTab(): Promise<ChatGptSessionResponse> {
       cache: 'no-store',
     });
   } catch (error) {
-    return fail(`无法请求 ChatGPT session：${String(error)}`);
+    return fail(`Failed to request the ChatGPT session: ${String(error)}`);
   }
 
   const text = await response.text();
@@ -96,21 +96,21 @@ async function fetchChatGptSessionInTab(): Promise<ChatGptSessionResponse> {
   }
 
   if (!isRecord(data)) {
-    return fail('ChatGPT session 响应不是 JSON 对象');
+    return fail('The ChatGPT session response is not a JSON object');
   }
 
   const session = extractSessionInfo(data);
   if (!session.accessToken) {
     return {
       ok: false,
-      message: session.email ? '已读取账号信息，但 session 内没有 accessToken' : '未读取到登录 session',
+      message: session.email ? 'Account info was loaded, but the session has no accessToken' : 'No login session was found',
       session,
     };
   }
 
   return {
     ok: true,
-    message: '已从当前标签页读取 ChatGPT session',
+    message: 'Loaded the ChatGPT session from the current tab',
     session,
   };
 
@@ -203,7 +203,7 @@ async function waitForOutlookOtp(message: OutlookOtpMessage): Promise<OutlookOtp
 
   return {
     ok: false,
-    message: '等待 Outlook 验证码超时',
+    message: 'Timed out waiting for the Outlook verification code',
   };
 }
 
@@ -230,7 +230,7 @@ async function fetchLatestOtp(
     return {
       ok: false,
       fatal: true,
-      message: `无法连接 Outlook 本地 API：${String(error)}`,
+      message: `Failed to connect to the local Outlook API: ${String(error)}`,
     };
   }
 
@@ -239,7 +239,7 @@ async function fetchLatestOtp(
     return {
       ok: false,
       fatal: true,
-      message: `Outlook API 返回 ${response.status}：${detail}`,
+      message: `Outlook API returned ${response.status}: ${detail}`,
     };
   }
 
@@ -260,14 +260,14 @@ async function fetchLatestOtp(
   if (!fresh?.otp) {
     return {
       ok: false,
-      message: '暂未收到新的 Outlook 验证码',
+      message: 'No new Outlook verification code has been received yet',
     };
   }
 
   return {
     ok: true,
     code: fresh.otp,
-    message: `收到验证码：${fresh.otp}`,
+    message: `Received verification code: ${fresh.otp}`,
   };
 }
 
@@ -334,13 +334,13 @@ async function fetchSmsRelay(url: string): Promise<SmsRelayFetchResponse> {
     if (parsedUrl.protocol !== 'http:' && parsedUrl.protocol !== 'https:') {
       return {
         ok: false,
-        message: '接码 API 只支持 http/https 链接',
+        message: 'The SMS relay API only supports http/https links',
       };
     }
   } catch {
     return {
       ok: false,
-      message: '接码 API 链接格式无效',
+      message: 'Invalid SMS relay API link format',
     };
   }
 
@@ -353,7 +353,7 @@ async function fetchSmsRelay(url: string): Promise<SmsRelayFetchResponse> {
   } catch (error) {
     return {
       ok: false,
-      message: `接码 API 请求失败：${String(error)}`,
+      message: `SMS relay API request failed: ${String(error)}`,
     };
   }
 
@@ -363,7 +363,7 @@ async function fetchSmsRelay(url: string): Promise<SmsRelayFetchResponse> {
     return {
       ok: false,
       status,
-      message: `接码 API 返回 ${status}：${text || response.statusText}`,
+      message: `SMS relay API returned ${status}: ${text || response.statusText}`,
       text,
       raw: detail,
     };

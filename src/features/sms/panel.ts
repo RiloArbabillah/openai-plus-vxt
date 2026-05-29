@@ -21,22 +21,22 @@ export function createSmsPanel(container: HTMLElement): FeaturePanelHandle {
 
   const input = document.createElement('textarea');
   input.className = 'opx-textarea opx-sms-input';
-  input.placeholder = '+14642649811----https://xxxx.com/xxx\n每行一个号码和 API 链接';
+  input.placeholder = '+14642649811----https://xxxx.com/xxx\nOne phone number and API link per line';
   input.autocomplete = 'off';
   input.spellcheck = false;
 
   const buttonRow = document.createElement('div');
   buttonRow.className = 'opx-button-row opx-sms-actions';
-  const saveButton = createButton('保存并开始');
-  const pollNowButton = createButton('立即获取', 'opx-button opx-button-secondary');
-  const clearHistoryButton = createButton('清空历史', 'opx-button opx-button-secondary');
+  const saveButton = createButton('Save and start');
+  const pollNowButton = createButton('Fetch now', 'opx-button opx-button-secondary');
+  const clearHistoryButton = createButton('Clear history', 'opx-button opx-button-secondary');
   buttonRow.append(saveButton, pollNowButton, clearHistoryButton);
 
-  const targetTitle = createTitle('当前号码');
+  const targetTitle = createTitle('Current numbers');
   const targetList = document.createElement('div');
   targetList.className = 'opx-sms-targets';
 
-  const historyTitle = createTitle('验证码历史');
+  const historyTitle = createTitle('Verification code history');
   const historyTable = document.createElement('div');
   historyTable.className = 'opx-sms-table';
 
@@ -52,7 +52,7 @@ export function createSmsPanel(container: HTMLElement): FeaturePanelHandle {
 
   container.append(
     summary,
-    createField('接码信息', input),
+    createField('SMS relay input', input),
     buttonRow,
     targetTitle,
     targetList,
@@ -89,7 +89,7 @@ export function createSmsPanel(container: HTMLElement): FeaturePanelHandle {
     const next = await saveSmsRelayState({ history: [] });
     currentState = next;
     renderHistory(next.history);
-    setStatus(status, '验证码历史已清空，输入内容已保留。', 'ok');
+    setStatus(status, 'Verification code history cleared. Input was kept.', 'ok');
   });
 
   const update = async () => {
@@ -158,7 +158,7 @@ export function createSmsPanel(container: HTMLElement): FeaturePanelHandle {
         runtimeById.set(target.id, {
           target,
           status: 'waiting',
-          message: '等待获取',
+          message: 'Waiting to fetch',
           code: '',
           lastCheckedAt: 0,
           inFlight: false,
@@ -168,7 +168,7 @@ export function createSmsPanel(container: HTMLElement): FeaturePanelHandle {
 
     targetList.textContent = '';
     if (!parsed.targets.length) {
-      targetList.append(createEmpty(parsed.errors[0] || '暂无号码，按每行“号码----API链接”输入。'));
+      targetList.append(createEmpty(parsed.errors[0] || 'No numbers yet. Enter one line per "number----API link".'));
     } else {
       for (const target of parsed.targets) {
         const runtime = runtimeById.get(target.id);
@@ -179,11 +179,11 @@ export function createSmsPanel(container: HTMLElement): FeaturePanelHandle {
     }
 
     if (parsed.errors.length) {
-      setStatus(status, parsed.errors.join('；'), 'error');
+      setStatus(status, parsed.errors.join('; '), 'error');
     } else if (parsed.targets.length) {
-      setStatus(status, `已加载 ${parsed.targets.length} 个接码链接，每 3 秒自动获取。`, 'pending');
+      setStatus(status, `Loaded ${parsed.targets.length} SMS relay link(s). Auto-fetch runs every 3 seconds.`, 'pending');
     } else {
-      setStatus(status, '输入内容会自动保存。', 'pending');
+      setStatus(status, 'Input is saved automatically.', 'pending');
     }
     renderSummary();
   }
@@ -192,7 +192,7 @@ export function createSmsPanel(container: HTMLElement): FeaturePanelHandle {
     const parsed = parseSmsRelayTargets(input.value);
     const historyCount = currentState?.history.length || 0;
     const foundCount = [...runtimeById.values()].filter((item) => item.code).length;
-    summary.textContent = `${parsed.targets.length} 个接码链接 · ${foundCount} 个当前验证码 · ${historyCount} 条历史`;
+    summary.textContent = `${parsed.targets.length} relay link(s) · ${foundCount} current code(s) · ${historyCount} history item(s)`;
   }
 
   async function pollAllTargets(): Promise<void> {
@@ -215,7 +215,7 @@ export function createSmsPanel(container: HTMLElement): FeaturePanelHandle {
 
     runtime.inFlight = true;
     runtime.status = runtime.code ? 'found' : 'waiting';
-    runtime.message = '正在获取...';
+    runtime.message = 'Fetching...';
     renderTargetsFromInput();
 
     const result = await fetchSmsRelayCode(target);
@@ -227,14 +227,14 @@ export function createSmsPanel(container: HTMLElement): FeaturePanelHandle {
       runtime.code = result.code;
       runtime.message = result.message;
       await appendCodeHistory(target.phone, result.code, result.message);
-      setStatus(status, `${target.phone} 收到验证码 ${result.code}`, 'ok');
+      setStatus(status, `${target.phone} received code ${result.code}`, 'ok');
       return;
     }
 
     if (result.kind === 'error') {
       runtime.status = 'error';
       runtime.message = result.message;
-      setStatus(status, `${target.phone} 获取失败：${result.message}`, 'error');
+      setStatus(status, `${target.phone} fetch failed: ${result.message}`, 'error');
       return;
     }
 
@@ -271,15 +271,15 @@ export function createSmsPanel(container: HTMLElement): FeaturePanelHandle {
     const phone = document.createElement('strong');
     phone.textContent = runtime.target.phone;
     const detail = document.createElement('span');
-    detail.textContent = runtime.code ? runtime.message : runtime.message || '等待获取';
+    detail.textContent = runtime.code ? runtime.message : runtime.message || 'Waiting to fetch';
     main.append(phone, detail);
 
     const codeButton = document.createElement('button');
     codeButton.className = 'opx-sms-code-chip';
     codeButton.type = 'button';
-    codeButton.textContent = runtime.code || (runtime.inFlight ? '...' : '等待');
+    codeButton.textContent = runtime.code || (runtime.inFlight ? '...' : 'Waiting');
     codeButton.disabled = !runtime.code;
-    codeButton.title = runtime.code ? '点击复制验证码' : '尚未收到验证码';
+    codeButton.title = runtime.code ? 'Click to copy the code' : 'No code received yet';
     codeButton.addEventListener('click', () => void copyCode(runtime.code, codeButton));
 
     row.append(main, codeButton);
@@ -290,13 +290,13 @@ export function createSmsPanel(container: HTMLElement): FeaturePanelHandle {
     historyTable.textContent = '';
     const header = document.createElement('div');
     header.className = 'opx-sms-table-row opx-sms-table-head';
-    header.append(createCell('号码'), createCell('验证码'), createCell('时间'));
+    header.append(createCell('Number'), createCell('Code'), createCell('Time'));
     historyTable.append(header);
 
     if (!history.length) {
       const empty = document.createElement('div');
       empty.className = 'opx-empty-inline';
-      empty.textContent = '暂无验证码历史。';
+      empty.textContent = 'No verification code history yet.';
       historyTable.append(empty);
       return;
     }
@@ -308,7 +308,7 @@ export function createSmsPanel(container: HTMLElement): FeaturePanelHandle {
       codeButton.className = 'opx-sms-code-chip';
       codeButton.type = 'button';
       codeButton.textContent = item.code;
-      codeButton.title = item.message || '点击复制验证码';
+      codeButton.title = item.message || 'Click to copy the code';
       codeButton.addEventListener('click', () => void copyCode(item.code, codeButton));
       row.append(
         createCell(item.phone),
@@ -325,7 +325,7 @@ export function createSmsPanel(container: HTMLElement): FeaturePanelHandle {
     }
     await navigator.clipboard.writeText(code);
     const original = button.textContent || code;
-    button.textContent = '已复制';
+    button.textContent = 'Copied';
     button.classList.add('is-copied');
     window.setTimeout(() => {
       button.textContent = original;

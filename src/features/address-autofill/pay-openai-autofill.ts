@@ -64,7 +64,7 @@ async function runAutofill(): Promise<void> {
 
 export async function fillPayOpenAiAddressNow(address: AddressProfile): Promise<{ ok: boolean; filled: number; message: string }> {
   if (location.hostname !== 'pay.openai.com') {
-    return { ok: false, filled: 0, message: '当前不是 pay.openai.com 页面' };
+    return { ok: false, filled: 0, message: 'The current page is not pay.openai.com' };
   }
 
   selectPaypalIfPresent();
@@ -73,7 +73,7 @@ export async function fillPayOpenAiAddressNow(address: AddressProfile): Promise<
   return {
     ok: filled > 0,
     filled,
-    message: filled > 0 ? `已填写 OpenAI 支付页 ${filled} 项` : '未找到可填写的 OpenAI 支付字段',
+    message: filled > 0 ? `Filled ${filled} field(s) on the OpenAI payment page` : 'No fillable OpenAI payment fields were found',
   };
 }
 

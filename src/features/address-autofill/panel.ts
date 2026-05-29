@@ -20,19 +20,19 @@ export function createAddressPanel(container: HTMLElement): FeaturePanelHandle {
   const cityInput = document.createElement('input');
   cityInput.className = 'opx-input';
   cityInput.type = 'text';
-  cityInput.placeholder = '城市留空即随机，例如 Tokyo / Berlin / New York';
+  cityInput.placeholder = 'Leave city empty for random selection, for example Tokyo / Berlin / New York';
   cityInput.autocomplete = 'off';
 
   const formGrid = document.createElement('div');
   formGrid.className = 'opx-grid';
   formGrid.append(
-    createField('地址国家', countrySelect),
-    createField('指定城市', cityInput),
+    createField('Country', countrySelect),
+    createField('City', cityInput),
   );
 
   const buttonRow = document.createElement('div');
   buttonRow.className = 'opx-button-row opx-address-actions';
-  const fetchButton = createButton('获取地址');
+  const fetchButton = createButton('Get address');
   buttonRow.append(fetchButton);
 
   const currentList = document.createElement('div');
@@ -49,8 +49,8 @@ export function createAddressPanel(container: HTMLElement): FeaturePanelHandle {
     status,
   );
 
-  countrySelect.addEventListener('change', () => void saveScopeSettings('国家已保存'));
-  cityInput.addEventListener('change', () => void saveScopeSettings('城市已保存'));
+  countrySelect.addEventListener('change', () => void saveScopeSettings('Country saved'));
+  cityInput.addEventListener('change', () => void saveScopeSettings('City saved'));
   fetchButton.addEventListener('click', () => void fetchAddress());
 
   const update = async () => {
@@ -77,7 +77,7 @@ export function createAddressPanel(container: HTMLElement): FeaturePanelHandle {
 
   async function fetchAddress(): Promise<void> {
     fetchButton.disabled = true;
-    setStatus(status, '正在获取随机地址...', 'pending');
+    setStatus(status, 'Loading random address...', 'pending');
     try {
       const response = await browser.runtime.sendMessage({
         type: 'opx:fetch-random-address',
@@ -85,7 +85,7 @@ export function createAddressPanel(container: HTMLElement): FeaturePanelHandle {
         city: cityInput.value.trim(),
       });
       if (!isRandomAddressResponse(response) || !response.ok || !response.address) {
-        setStatus(status, response?.message || '获取地址失败', 'error');
+        setStatus(status, response?.message || 'Failed to load address', 'error');
         return;
       }
       const next = await saveAddressAutofillSettings({
@@ -97,7 +97,7 @@ export function createAddressPanel(container: HTMLElement): FeaturePanelHandle {
       const autofillMessage = await fillCurrentPaymentPage(response.address);
       setStatus(status, autofillMessage ? `${response.message}；${autofillMessage}` : response.message, 'ok');
     } catch (error) {
-      setStatus(status, `获取地址失败：${errorMessage(error)}`, 'error');
+      setStatus(status, `Failed to load address: ${errorMessage(error)}`, 'error');
     } finally {
       fetchButton.disabled = false;
     }
@@ -122,14 +122,14 @@ export function createAddressPanel(container: HTMLElement): FeaturePanelHandle {
 
   function renderSummary(settings: AddressAutofillSettings): void {
     const countryLabel = countrySelect.selectedOptions[0]?.textContent || settings.countryCode;
-    const cityLabel = settings.city || '随机城市';
+    const cityLabel = settings.city || 'Random city';
     summary.textContent = `${countryLabel} · ${cityLabel}`;
   }
 
   function renderAddress(address: AddressProfile | null): void {
     currentList.textContent = '';
     if (!address) {
-      currentList.append(createEmpty('暂无地址，点击“获取地址”。'));
+      currentList.append(createEmpty('No address yet. Click "Get address".'));
       return;
     }
 
@@ -142,7 +142,7 @@ export function createAddressPanel(container: HTMLElement): FeaturePanelHandle {
     const row = document.createElement('button');
     row.className = 'opx-copy-row';
     row.type = 'button';
-    row.title = '点击复制';
+    row.title = 'Click to copy';
     const labelElement = document.createElement('span');
     labelElement.className = 'opx-copy-label';
     labelElement.textContent = `${label}：`;
@@ -150,7 +150,7 @@ export function createAddressPanel(container: HTMLElement): FeaturePanelHandle {
     valueElement.textContent = value;
     const feedbackElement = document.createElement('span');
     feedbackElement.className = 'opx-copy-feedback';
-    feedbackElement.textContent = '已复制';
+    feedbackElement.textContent = 'Copied';
     feedbackElement.hidden = true;
     let feedbackTimer: number | null = null;
     row.append(labelElement, valueElement, feedbackElement);
@@ -202,54 +202,54 @@ export function createAddressPanel(container: HTMLElement): FeaturePanelHandle {
 function addressSections(address: AddressProfile): AddressSection[] {
   return [
     {
-      title: '地址资料',
+      title: 'Address details',
       items: [
-        { label: '国家', value: `${address.countryLabel || address.countryCode} / ${address.countryCode}` },
-        { label: '姓名', value: address.fullName },
-        { label: '电话', value: address.phone },
-        { label: '地址1', value: address.line1 },
-        { label: '地址2', value: address.line2 },
-        { label: '城市', value: address.city },
-        { label: '州/省', value: address.stateFull ? `${address.stateFull} / ${address.state}` : address.state },
-        { label: '邮编', value: address.postalCode },
+        { label: 'Country', value: `${address.countryLabel || address.countryCode} / ${address.countryCode}` },
+        { label: 'Name', value: address.fullName },
+        { label: 'Phone', value: address.phone },
+        { label: 'Address 1', value: address.line1 },
+        { label: 'Address 2', value: address.line2 },
+        { label: 'City', value: address.city },
+        { label: 'State/Province', value: address.stateFull ? `${address.stateFull} / ${address.state}` : address.state },
+        { label: 'Postal code', value: address.postalCode },
       ],
     },
     {
-      title: '信用卡资料',
+      title: 'Credit card details',
       items: [
-        { label: '卡类型', value: address.creditCard.type },
-        { label: '卡号', value: address.creditCard.number },
+        { label: 'Card type', value: address.creditCard.type },
+        { label: 'Card number', value: address.creditCard.number },
         { label: 'CVV', value: address.creditCard.cvv },
-        { label: '有效期', value: address.creditCard.expires },
-        { label: '后四位', value: address.creditCard.last4 },
+        { label: 'Expiry', value: address.creditCard.expires },
+        { label: 'Last four', value: address.creditCard.last4 },
       ],
     },
     {
-      title: '身份资料',
+      title: 'Identity details',
       collapsed: true,
       items: [
-        { label: '性别', value: address.identity.gender },
-        { label: '称谓', value: address.identity.title },
-        { label: '生日', value: address.identity.birthday },
-        { label: '用户名', value: address.identity.username },
-        { label: '密码', value: address.identity.password },
-        { label: '临时邮箱', value: address.identity.temporaryMail },
-        { label: '系统', value: address.identity.system },
-        { label: '网站', value: address.identity.website },
-        { label: '安全问题', value: address.identity.securityQuestion },
-        { label: '安全答案', value: address.identity.securityAnswer },
+        { label: 'Gender', value: address.identity.gender },
+        { label: 'Title', value: address.identity.title },
+        { label: 'Birthday', value: address.identity.birthday },
+        { label: 'Username', value: address.identity.username },
+        { label: 'Password', value: address.identity.password },
+        { label: 'Temporary email', value: address.identity.temporaryMail },
+        { label: 'System', value: address.identity.system },
+        { label: 'Website', value: address.identity.website },
+        { label: 'Security question', value: address.identity.securityQuestion },
+        { label: 'Security answer', value: address.identity.securityAnswer },
       ],
     },
     {
-      title: '就业资料',
+      title: 'Employment details',
       collapsed: true,
       items: [
-        { label: '公司', value: address.employment.companyName },
-        { label: '职业', value: address.employment.occupation },
-        { label: '就业状态', value: address.employment.employmentStatus },
-        { label: '月薪', value: address.employment.monthlySalary },
-        { label: '公司规模', value: address.employment.companySize },
-        { label: '教育背景', value: address.employment.educationalBackground },
+        { label: 'Company', value: address.employment.companyName },
+        { label: 'Occupation', value: address.employment.occupation },
+        { label: 'Employment status', value: address.employment.employmentStatus },
+        { label: 'Monthly salary', value: address.employment.monthlySalary },
+        { label: 'Company size', value: address.employment.companySize },
+        { label: 'Education', value: address.employment.educationalBackground },
       ],
     },
   ];
@@ -260,7 +260,7 @@ function createCountrySelect(): HTMLSelectElement {
   select.className = 'opx-select';
   const randomCountryOption = document.createElement('option');
   randomCountryOption.value = 'RANDOM';
-  randomCountryOption.textContent = '随机国家';
+  randomCountryOption.textContent = 'Random country';
   select.append(randomCountryOption);
   for (const country of ADDRESS_COUNTRY_OPTIONS) {
     const option = document.createElement('option');

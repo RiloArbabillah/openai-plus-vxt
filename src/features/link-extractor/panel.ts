@@ -4,10 +4,10 @@ import { extractAccessToken, normalizeCheckoutOptions } from './checkout';
 import type { ChatGptSessionResponse, CheckoutLinkResponse, CheckoutOptions } from './types';
 
 const REGION_OPTIONS = [
-  ['ID', '印尼 / IDR'],
-  ['DE', '德国 / EUR'],
-  ['JP', '日本 / JPY'],
-  ['US', '美国 / USD'],
+  ['ID', 'Indonesia / IDR'],
+  ['DE', 'Germany / EUR'],
+  ['JP', 'Japan / JPY'],
+  ['US', 'United States / USD'],
 ];
 
 export function createLinkExtractorPanel(container: HTMLElement): FeaturePanelHandle {
@@ -16,32 +16,32 @@ export function createLinkExtractorPanel(container: HTMLElement): FeaturePanelHa
 
   const sessionCard = document.createElement('div');
   sessionCard.className = 'opx-session-card';
-  const emailValue = createSessionRow('邮箱', '未读取');
-  const planValue = createSessionRow('套餐', '未读取');
-  const tokenValue = createSessionRow('Token', '未读取');
+  const emailValue = createSessionRow('Email', 'Not loaded');
+  const planValue = createSessionRow('Plan', 'Not loaded');
+  const tokenValue = createSessionRow('Token', 'Not loaded');
   sessionCard.append(emailValue.row, planValue.row, tokenValue.row);
 
-  const refreshSessionButton = createButton('读取 ChatGPT session', 'opx-button opx-button-secondary');
+  const refreshSessionButton = createButton('Load ChatGPT session', 'opx-button opx-button-secondary');
 
   const planSelect = createSelect([
     ['chatgptplusplan', 'ChatGPT Plus'],
     ['chatgptteamplan', 'ChatGPT Team'],
   ]);
   const uiModeSelect = createSelect([
-    ['custom', '短链接 / custom'],
-    ['hosted', '长链接 / hosted'],
+    ['custom', 'Short link / custom'],
+    ['hosted', 'Long link / hosted'],
   ]);
   const regionSelect = createSelect(REGION_OPTIONS);
-  const workspaceInput = createInput('Workspace 名称', 'text');
-  const seatsInput = createInput('席位数量', 'number');
+  const workspaceInput = createInput('Workspace name', 'text');
+  const seatsInput = createInput('Seat count', 'number');
   seatsInput.min = '2';
   seatsInput.step = '1';
 
   const mainGrid = document.createElement('div');
   mainGrid.className = 'opx-grid';
-  const planField = createField('套餐类型', planSelect);
-  const uiModeField = createField('链接形式', uiModeSelect);
-  const regionField = createField('计费区域', regionSelect);
+  const planField = createField('Plan type', planSelect);
+  const uiModeField = createField('Link format', uiModeSelect);
+  const regionField = createField('Billing region', regionSelect);
   mainGrid.append(planField, uiModeField, regionField);
 
   const teamOptions = document.createElement('div');
@@ -50,37 +50,37 @@ export function createLinkExtractorPanel(container: HTMLElement): FeaturePanelHa
   teamGrid.className = 'opx-grid';
   teamGrid.append(
     createField('Workspace', workspaceInput),
-    createField('席位', seatsInput),
+    createField('Seats', seatsInput),
   );
   teamOptions.append(teamGrid);
 
   const tokenInput = document.createElement('textarea');
   tokenInput.className = 'opx-textarea opx-token-textarea';
-  tokenInput.placeholder = '自动读取或手动粘贴 ChatGPT session JSON / Access Token';
+  tokenInput.placeholder = 'Auto-load or paste ChatGPT session JSON / Access Token';
   tokenInput.autocomplete = 'off';
   tokenInput.spellcheck = false;
 
   const tokenHint = document.createElement('div');
   tokenHint.className = 'opx-hint';
-  tokenHint.textContent = '切到提链接 tab 会读取 /api/auth/session；token 只在当前页面内使用。';
+  tokenHint.textContent = 'Switching to the Links tab will load /api/auth/session; the token is only used on the current page.';
 
-  const generateLinkButton = createButton('生成订阅链接');
+  const generateLinkButton = createButton('Generate checkout link');
   const linkOutput = document.createElement('textarea');
   linkOutput.className = 'opx-textarea opx-output';
-  linkOutput.placeholder = '生成后的订阅链接';
+  linkOutput.placeholder = 'Generated checkout link';
   linkOutput.readOnly = true;
   linkOutput.spellcheck = false;
 
   const linkButtonRow = document.createElement('div');
   linkButtonRow.className = 'opx-button-row';
-  const copyLinkButton = createButton('复制链接', 'opx-button opx-button-secondary');
-  const openLinkButton = createButton('打开链接', 'opx-button opx-button-secondary');
-  const clearLinkButton = createButton('清空', 'opx-button opx-button-secondary');
+  const copyLinkButton = createButton('Copy link', 'opx-button opx-button-secondary');
+  const openLinkButton = createButton('Open link', 'opx-button opx-button-secondary');
+  const clearLinkButton = createButton('Clear', 'opx-button opx-button-secondary');
   linkButtonRow.append(copyLinkButton, openLinkButton, clearLinkButton);
 
   const linkStatus = document.createElement('div');
   linkStatus.className = 'opx-status';
-  linkStatus.textContent = '等待读取 ChatGPT session。';
+  linkStatus.textContent = 'Waiting to load the ChatGPT session.';
 
   let generatedLink = '';
   let sessionAccessToken = '';
@@ -101,7 +101,7 @@ export function createLinkExtractorPanel(container: HTMLElement): FeaturePanelHa
       const options = readCheckoutOptions();
       await saveLinkExtractorState({ checkoutOptions: options });
       setLinkSummary(options);
-      setStatus(linkStatus, '本地参数已更新', 'ok');
+      setStatus(linkStatus, 'Local parameters updated', 'ok');
     } catch (error) {
       setStatus(linkStatus, errorMessage(error), 'error');
     }
@@ -123,10 +123,10 @@ export function createLinkExtractorPanel(container: HTMLElement): FeaturePanelHa
   });
 
   generateLinkButton.addEventListener('click', async () => {
-    setStatus(linkStatus, '正在生成订阅链接...', 'pending');
+    setStatus(linkStatus, 'Generating checkout link...', 'pending');
     const token = tokenInput.value.trim() ? normalizeTokenInput(true) : sessionAccessToken;
     if (!token) {
-      setStatus(linkStatus, '没有 accessToken，请先读取 session 或手动粘贴。', 'error');
+      setStatus(linkStatus, 'No accessToken found. Load the session first or paste it manually.', 'error');
       return;
     }
 
@@ -147,13 +147,13 @@ export function createLinkExtractorPanel(container: HTMLElement): FeaturePanelHa
         options,
       });
     } catch (error) {
-      setStatus(linkStatus, `生成失败：${String(error)}`, 'error');
+      setStatus(linkStatus, `Generation failed: ${String(error)}`, 'error');
       return;
     }
 
     const link = response?.link || response?.url || '';
     if (!isCheckoutLinkResponse(response) || !response.ok || !link) {
-      setStatus(linkStatus, response?.message || '生成失败：返回结果无效', 'error');
+      setStatus(linkStatus, response?.message || 'Generation failed: invalid response', 'error');
       setGeneratedLink('');
       return;
     }
@@ -167,7 +167,7 @@ export function createLinkExtractorPanel(container: HTMLElement): FeaturePanelHa
       return;
     }
     await navigator.clipboard.writeText(generatedLink);
-    setStatus(linkStatus, '已复制链接', 'ok');
+    setStatus(linkStatus, 'Link copied', 'ok');
   });
 
   openLinkButton.addEventListener('click', () => {
@@ -179,11 +179,11 @@ export function createLinkExtractorPanel(container: HTMLElement): FeaturePanelHa
   clearLinkButton.addEventListener('click', () => {
     tokenInput.value = '';
     sessionAccessToken = '';
-    tokenHint.textContent = '切到提链接 tab 会读取 /api/auth/session；token 只在当前页面内使用。';
+    tokenHint.textContent = 'Switching to the Links tab will load /api/auth/session; the token is only used on the current page.';
     tokenHint.classList.remove('is-ok');
     setGeneratedLink('');
     setSessionRows('', '', '');
-    setStatus(linkStatus, '已清空', 'ok');
+    setStatus(linkStatus, 'Cleared', 'ok');
     tokenInput.focus();
   });
 
@@ -196,7 +196,7 @@ export function createLinkExtractorPanel(container: HTMLElement): FeaturePanelHa
     tokenInput,
     tokenHint,
     generateLinkButton,
-    createField('订阅链接', linkOutput),
+    createField('Checkout link', linkOutput),
     linkButtonRow,
     linkStatus,
   );
@@ -210,14 +210,14 @@ export function createLinkExtractorPanel(container: HTMLElement): FeaturePanelHa
     }
     sessionFetchInFlight = true;
     refreshSessionButton.disabled = true;
-    setStatus(linkStatus, '正在读取 https://chatgpt.com/api/auth/session ...', 'pending');
+    setStatus(linkStatus, 'Loading https://chatgpt.com/api/auth/session ...', 'pending');
     try {
       const response: ChatGptSessionResponse = await browser.runtime.sendMessage({
         type: 'opx:fetch-chatgpt-session',
       });
       sessionFetchedOnce = true;
       if (!isChatGptSessionResponse(response)) {
-        setStatus(linkStatus, 'session 返回结果无效', 'error');
+        setStatus(linkStatus, 'Invalid session response', 'error');
         return;
       }
 
@@ -226,12 +226,12 @@ export function createLinkExtractorPanel(container: HTMLElement): FeaturePanelHa
       if (session?.accessToken) {
         sessionAccessToken = session.accessToken;
         tokenInput.value = session.accessToken;
-        tokenHint.textContent = '已从 ChatGPT session 读取 accessToken。';
+        tokenHint.textContent = 'Loaded accessToken from the ChatGPT session.';
         tokenHint.classList.add('is-ok');
       }
       setStatus(linkStatus, response.message, response.ok ? 'ok' : 'error');
     } catch (error) {
-      setStatus(linkStatus, `读取 session 失败：${String(error)}`, 'error');
+      setStatus(linkStatus, `Failed to load session: ${String(error)}`, 'error');
     } finally {
       refreshSessionButton.disabled = false;
       sessionFetchInFlight = false;
@@ -260,8 +260,8 @@ export function createLinkExtractorPanel(container: HTMLElement): FeaturePanelHa
 
   function setLinkSummary(options: CheckoutOptions): void {
     const planText = options.planName === 'chatgptteamplan' ? `Team · ${options.seatQuantity} seats` : 'Plus';
-    const modeText = options.uiMode === 'hosted' ? '长链接 hosted' : '短链接 custom';
-    const sessionText = sessionFetchedOnce ? 'session 已请求' : 'session 待读取';
+    const modeText = options.uiMode === 'hosted' ? 'Long link hosted' : 'Short link custom';
+    const sessionText = sessionFetchedOnce ? 'session loaded' : 'session pending';
     linkSummary.textContent = `${planText} · ${modeText} · ${options.region} · ${sessionText}`;
     teamOptions.hidden = options.planName !== 'chatgptteamplan';
     regionField.hidden = options.planName === 'chatgptteamplan';
@@ -273,7 +273,7 @@ export function createLinkExtractorPanel(container: HTMLElement): FeaturePanelHa
       if (tokenInput.value.trim() !== token) {
         tokenInput.value = token;
       }
-      tokenHint.textContent = '已本地提取 accessToken。';
+      tokenHint.textContent = 'Extracted accessToken locally.';
       tokenHint.classList.add('is-ok');
       return token;
     } catch (error) {
@@ -293,9 +293,9 @@ export function createLinkExtractorPanel(container: HTMLElement): FeaturePanelHa
   }
 
   function setSessionRows(email: string, planType: string, accessToken: string): void {
-    emailValue.value.textContent = email || '未读取';
-    planValue.value.textContent = planType || '未读取';
-    tokenValue.value.textContent = accessToken ? '已获取' : '未获取';
+    emailValue.value.textContent = email || 'Not loaded';
+    planValue.value.textContent = planType || 'Not loaded';
+    tokenValue.value.textContent = accessToken ? 'Loaded' : 'Missing';
   }
 }
 

@@ -15,12 +15,12 @@ export function isEmailVerificationPage(): boolean {
 export async function fillOtpAndContinue(code: string): Promise<ActionResult> {
   const normalized = code.replace(/\D/g, '');
   if (!normalized) {
-    return fail('验证码不能为空');
+    return fail('Verification code cannot be empty');
   }
 
   const input = findOtpInput();
   if (!input) {
-    return fail('没有找到验证码输入框');
+    return fail('Verification code input was not found');
   }
 
   setNativeValue(input, normalized);
@@ -31,7 +31,7 @@ export async function fillOtpAndContinue(code: string): Promise<ActionResult> {
 
   const button = findContinueButton();
   if (!button) {
-    return fail('没有找到验证码继续按钮');
+    return fail('Verification continue button was not found');
   }
 
   if (button.disabled) {
@@ -39,11 +39,11 @@ export async function fillOtpAndContinue(code: string): Promise<ActionResult> {
   }
 
   if (button.disabled) {
-    return fail('验证码继续按钮仍然不可点击');
+    return fail('Verification continue button is still not clickable');
   }
 
   button.click();
-  return ok('已填入验证码并点击继续');
+  return ok('Filled the verification code and clicked continue');
 }
 
 function findOtpInput(): HTMLInputElement | null {

@@ -11,7 +11,7 @@ export async function fetchChatGptSession(): Promise<ChatGptSessionResponse> {
       credentials: 'include',
     });
   } catch (error) {
-    return fail(`无法请求 ChatGPT session：${String(error)}`);
+    return fail(`Failed to request the ChatGPT session: ${String(error)}`);
   }
 
   const text = await response.text();
@@ -21,21 +21,21 @@ export async function fetchChatGptSession(): Promise<ChatGptSessionResponse> {
   }
 
   if (!isRecord(data)) {
-    return fail('ChatGPT session 响应不是 JSON 对象');
+    return fail('The ChatGPT session response is not a JSON object');
   }
 
   const session = extractSessionInfo(data);
   if (!session.accessToken) {
     return {
       ok: false,
-      message: session.email ? '已读取账号信息，但 session 内没有 accessToken' : '未读取到登录 session',
+      message: session.email ? 'Account info was loaded, but the session has no accessToken' : 'No login session was found',
       session,
     };
   }
 
   return {
     ok: true,
-    message: '已读取 ChatGPT session',
+    message: 'ChatGPT session loaded',
     session,
   };
 }

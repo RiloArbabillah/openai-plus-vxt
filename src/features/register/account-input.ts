@@ -5,7 +5,7 @@ const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 export function parseAccountInput(rawInput: string): ParsedAccountInput {
   const raw = rawInput.trim();
   if (!raw) {
-    return invalid('empty', '请输入邮箱或 Outlook 账号行');
+    return invalid('empty', 'Enter an email or an Outlook account line');
   }
 
   const firstLine = raw.split(/\r?\n/).map((line) => line.trim()).find(Boolean) || '';
@@ -13,22 +13,22 @@ export function parseAccountInput(rawInput: string): ParsedAccountInput {
     const parts = firstLine.split('----').map((item) => item.trim());
     const email = parts[0] || '';
     if (!EMAIL_RE.test(email)) {
-      return invalid('invalid', 'Outlook 行里的邮箱格式不正确');
+      return invalid('invalid', 'The email format in the Outlook line is invalid');
     }
     if (parts.length < 4 || !parts[2] || !parts[3]) {
-      return invalid('invalid', 'Outlook 行需要 email----password----client_id----refresh_token');
+      return invalid('invalid', 'An Outlook line must use email----password----client_id----refresh_token');
     }
     return {
       ok: true,
       mode: 'outlook-line',
       email,
       accountLine: firstLine,
-      message: 'Outlook API 自动验证码',
+      message: 'Outlook API automatic code mode',
     };
   }
 
   if (!EMAIL_RE.test(firstLine)) {
-    return invalid('invalid', '邮箱格式不正确');
+    return invalid('invalid', 'Invalid email format');
   }
 
   return {
@@ -36,7 +36,7 @@ export function parseAccountInput(rawInput: string): ParsedAccountInput {
     mode: 'email',
     email: firstLine,
     accountLine: '',
-    message: '单邮箱模式，验证码手动输入',
+    message: 'Single-email mode, enter the code manually',
   };
 }
 

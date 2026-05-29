@@ -4,29 +4,29 @@ import type { RegisterController } from './types';
 export function createRegisterPanel(container: HTMLElement, controller: RegisterController): FeaturePanelHandle {
   const accountInput = document.createElement('textarea');
   accountInput.className = 'opx-textarea';
-  accountInput.placeholder = '邮箱或 Outlook 行';
+  accountInput.placeholder = 'Email or Outlook line';
   accountInput.autocomplete = 'off';
   accountInput.spellcheck = false;
 
   const inputHint = document.createElement('div');
   inputHint.className = 'opx-hint';
-  inputHint.textContent = '支持 user@example.com 或 email----password----client_id----refresh_token';
+  inputHint.textContent = 'Supports user@example.com or email----password----client_id----refresh_token';
 
-  const emailButton = createButton('填入邮箱并继续');
+  const emailButton = createButton('Fill email and continue');
   const otp = document.createElement('input');
   otp.className = 'opx-input';
   otp.type = 'text';
   otp.inputMode = 'numeric';
-  otp.placeholder = '验证码';
+  otp.placeholder = 'Verification code';
   otp.autocomplete = 'one-time-code';
 
-  const otpButton = createButton('填入验证码并继续');
-  const autoOtpButton = createButton('自动接收并填入验证码', 'opx-button opx-button-secondary');
-  const profileButton = createButton('填写资料并创建');
+  const otpButton = createButton('Fill code and continue');
+  const autoOtpButton = createButton('Auto-fetch and fill code', 'opx-button opx-button-secondary');
+  const profileButton = createButton('Fill profile and create');
 
   const status = document.createElement('div');
   status.className = 'opx-status';
-  status.textContent = '等待操作';
+  status.textContent = 'Waiting for action';
 
   const update = async () => {
     const page = controller.getPageState();
@@ -39,38 +39,38 @@ export function createRegisterPanel(container: HTMLElement, controller: Register
     autoOtpButton.disabled = !page.canFillOtp || !saved.autoOtp;
     profileButton.disabled = !page.canFillProfile;
     inputHint.textContent = saved.autoOtp
-      ? 'Outlook 行模式：验证码页会通过本地 API 自动收码'
-      : '单邮箱模式：验证码需要手动输入';
+      ? 'Outlook line mode: the verification page will auto-fetch codes through the local API'
+      : 'Single-email mode: enter the verification code manually';
   };
 
   accountInput.addEventListener('input', async () => {
     const saved = await controller.saveInput(accountInput.value);
     inputHint.textContent = saved.autoOtp
-      ? 'Outlook 行模式：验证码页会通过本地 API 自动收码'
-      : '单邮箱模式：验证码需要手动输入';
+      ? 'Outlook line mode: the verification page will auto-fetch codes through the local API'
+      : 'Single-email mode: enter the verification code manually';
   });
 
   emailButton.addEventListener('click', async () => {
-    setStatus(status, '正在提交邮箱...', 'pending');
+    setStatus(status, 'Submitting email...', 'pending');
     await controller.saveInput(accountInput.value);
     setResult(status, await controller.fillEmailFromInput());
     await update();
   });
 
   otpButton.addEventListener('click', async () => {
-    setStatus(status, '正在提交验证码...', 'pending');
+    setStatus(status, 'Submitting verification code...', 'pending');
     setResult(status, await controller.fillOtp(otp.value));
     await update();
   });
 
   autoOtpButton.addEventListener('click', async () => {
-    setStatus(status, '等待 Outlook 验证码...', 'pending');
+    setStatus(status, 'Waiting for Outlook verification code...', 'pending');
     setResult(status, await controller.waitForOutlookOtp());
     await update();
   });
 
   profileButton.addEventListener('click', async () => {
-    setStatus(status, '正在填写资料...', 'pending');
+    setStatus(status, 'Filling profile...', 'pending');
     setResult(status, await controller.fillProfileAndCreate());
     await update();
   });

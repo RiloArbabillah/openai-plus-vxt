@@ -28,7 +28,7 @@ export function createRegisterController(): RegisterController {
         return fail(parsed.message);
       }
       if (!isChatGptLoginPage()) {
-        return fail('当前页面不是 ChatGPT 登录页');
+        return fail('The current page is not the ChatGPT login page');
       }
       await saveRegisterState({
         email: parsed.email,
@@ -41,17 +41,17 @@ export function createRegisterController(): RegisterController {
     },
     fillOtp: async (code: string) => {
       if (!isEmailVerificationPage()) {
-        return fail('当前页面不是邮箱验证码页');
+        return fail('The current page is not the email verification page');
       }
       return fillOtpAndContinue(code);
     },
     waitForOutlookOtp: async () => {
       if (!isEmailVerificationPage()) {
-        return fail('当前页面不是邮箱验证码页');
+        return fail('The current page is not the email verification page');
       }
       const state = await loadRegisterState();
       if (!state.accountLine) {
-        return fail('当前输入不是 Outlook 账号行，不能自动接收验证码');
+        return fail('The current input is not an Outlook account line, so the code cannot be fetched automatically');
       }
 
       const response = await browser.runtime.sendMessage({
@@ -64,7 +64,7 @@ export function createRegisterController(): RegisterController {
       });
 
       if (!isActionResult(response)) {
-        return fail('Outlook API 没有返回有效结果');
+        return fail('The Outlook API did not return a valid result');
       }
 
       if (!response.ok || !response.code) {
@@ -75,12 +75,12 @@ export function createRegisterController(): RegisterController {
       return {
         ...fillResult,
         code: response.code,
-        message: fillResult.ok ? `已收到并提交验证码：${response.code}` : fillResult.message,
+        message: fillResult.ok ? `Received and submitted verification code: ${response.code}` : fillResult.message,
       };
     },
     fillProfileAndCreate: async () => {
       if (!isAboutYouPage()) {
-        return fail('当前页面不是资料填写页');
+        return fail('The current page is not the profile form page');
       }
       return fillAboutYouAndCreate();
     },
@@ -99,7 +99,7 @@ function getPageState(): PageState {
   if (isChatGptLoginPage()) {
     return {
       kind: 'login',
-      label: 'ChatGPT 登录页',
+      label: 'ChatGPT login page',
       canFillEmail: true,
       canFillOtp: false,
       canFillProfile: false,
@@ -109,7 +109,7 @@ function getPageState(): PageState {
   if (isEmailVerificationPage()) {
     return {
       kind: 'email-verification',
-      label: '邮箱验证码页',
+      label: 'Email verification page',
       canFillEmail: false,
       canFillOtp: true,
       canFillProfile: false,
@@ -119,7 +119,7 @@ function getPageState(): PageState {
   if (isAboutYouPage()) {
     return {
       kind: 'about-you',
-      label: '资料填写页',
+      label: 'Profile form page',
       canFillEmail: false,
       canFillOtp: false,
       canFillProfile: true,
@@ -128,7 +128,7 @@ function getPageState(): PageState {
 
   return {
     kind: 'unknown',
-    label: '未识别页面',
+    label: 'Unrecognized page',
     canFillEmail: false,
     canFillOtp: false,
     canFillProfile: false,
