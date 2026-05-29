@@ -1,107 +1,107 @@
 # OpenAI Plus VXT
 
-一个基于 [WXT](https://wxt.dev/) 的浏览器插件，用于辅助 ChatGPT 注册、Checkout 链接提取、随机地址资料生成，以及 OpenAI/PayPal 支付页资料自动填写。
+A browser extension built with [WXT](https://wxt.dev/) to assist with ChatGPT registration, checkout link extraction, random address profile generation, and autofilling information on OpenAI/PayPal payment pages.
 
-TG 群组：[https://t.me/fuck_open](https://t.me/fuck_open)
+Telegram group: [https://t.me/fuck_open](https://t.me/fuck_open)
 
-## 功能
+## Features
 
-- 注册辅助
-  - 支持单邮箱输入。
-  - 支持 `email----password----client_id----refresh_token` 格式的 Outlook 账号行。
-  - 在 OpenAI 邮箱验证码页可手动填验证码，也可通过本地 Outlook API 自动收码并提交。
-  - 在资料页自动填写英文姓名和年龄。
+- Registration helper
+  - Supports single-email input.
+  - Supports Outlook account lines in the `email----password----client_id----refresh_token` format.
+  - On the OpenAI email verification page, you can either enter the code manually or fetch and submit it automatically through a local Outlook API.
+  - Automatically fills in an English name and age on the profile page.
 
-- 提链接
-  - 切换到“提链接”tab 时读取 `https://chatgpt.com/api/auth/session`。
-  - 从 session 中读取 `accessToken`、`user.email`、`account.planType`。
-  - 支持生成 ChatGPT checkout 长链接和短链接。
-  - Checkout 参数可在插件内调整并持久化。
+- Link extraction
+  - Reads `https://chatgpt.com/api/auth/session` when you switch to the "Link Extractor" tab.
+  - Extracts `accessToken`, `user.email`, and `account.planType` from the session.
+  - Supports generating both long and short ChatGPT checkout links.
+  - Checkout parameters can be adjusted and persisted inside the extension.
 
-- 地址资料
-  - 支持从 `https://www.meiguodizhi.com/` 获取随机地址资料。
-  - 支持指定国家、指定城市，或随机国家/随机城市。
-  - 地址、身份、就业、信用卡等资料可在插件面板中查看和复制。
-  - 当前地址资料会保存到本地，页面刷新后仍可使用。
+- Address profile
+  - Supports fetching random address data from `https://www.meiguodizhi.com/`.
+  - Supports a specific country, a specific city, or random country/random city.
+  - Address, identity, employment, credit card, and related profile data can be viewed and copied in the extension panel.
+  - The current address profile is saved locally and remains available after page refresh.
 
-- 支付页自动填写
-  - `pay.openai.com/c/pay`：自动选择 PayPal、填写姓名、国家、地址、邮编、电话，并勾选条款。
-  - `paypal.com/checkoutweb/signup`：自动填写国家、邮箱、卡资料、姓名、地址、密码，并显示“当前密码和邮箱一致”的提示。
-  - 两个页面的自动填写开关在设置里独立控制，默认开启。
+- Payment page autofill
+  - `pay.openai.com/c/pay`: automatically selects PayPal, fills in name, country, address, postal code, and phone number, then checks the terms box.
+  - `paypal.com/checkoutweb/signup`: automatically fills in country, email, card details, name, address, and password, and shows a reminder that the current password matches the email.
+  - Autofill switches for the two pages are controlled independently in settings and are enabled by default.
 
-- 插件面板
-  - 右侧浮动面板，支持收起/展开。
-  - 收起状态、当前 tab、输入内容和设置会保存在本地。
-  - 设置页显示当前插件版本号，支持手动检测 GitHub Release 更新。
-  - 设置页提供 TG 群组入口：[https://t.me/fuck_open](https://t.me/fuck_open)。 
+- Extension panel
+  - Floating panel on the right side with collapse/expand support.
+  - Collapse state, current tab, input content, and settings are saved locally.
+  - The settings page shows the current extension version and supports manual GitHub Release update checks.
+  - The settings page also includes a Telegram group link: [https://t.me/fuck_open](https://t.me/fuck_open).
 
-## 截图
+## Screenshots
 
-### 注册辅助
+### Registration Helper
 
-![注册辅助](image/reg.png)
+![Registration Helper](image/reg.png)
 
-### 提链接
+### Link Extractor
 
-![提链接](image/link.png)
+![Link Extractor](image/link.png)
 
-### 地址资料
+### Address Profile
 
-![地址资料](image/address.png)
+![Address Profile](image/address.png)
 
-### 接码
+### SMS Code
 
-![接码](image/sms.png)
+![SMS Code](image/sms.png)
 
-### 设置
+### Settings
 
-![设置](image/settings.png)
+![Settings](image/settings.png)
 
-## 开发环境
+## Development Environment
 
-需要安装：
+Install the following first:
 
 - Node.js
 - pnpm
-- Chrome 或 Chromium
+- Chrome or Chromium
 
-安装依赖：
+Install dependencies:
 
 ```bash
 pnpm install
 ```
 
-启动开发模式：
+Start development mode:
 
 ```bash
 pnpm dev
 ```
 
-WXT 会启动浏览器并加载插件。也可以使用手动调试模式：
+WXT will launch the browser and load the extension. You can also use manual debugging mode:
 
 ```bash
 pnpm dev:manual
 ```
 
-类型检查：
+Type check:
 
 ```bash
 pnpm compile
 ```
 
-构建：
+Build:
 
 ```bash
 pnpm build
 ```
 
-打包：
+Package:
 
 ```bash
 pnpm zip
 ```
 
-Firefox：
+Firefox:
 
 ```bash
 pnpm dev:firefox
@@ -109,25 +109,25 @@ pnpm build:firefox
 pnpm zip:firefox
 ```
 
-## Outlook 自动收码 API
+## Outlook Auto-Code API
 
-注册模块支持通过本地服务读取 Outlook 验证码。默认 API 地址：
+The registration module can read Outlook verification codes through a local service. Default API address:
 
 ```text
 http://127.0.0.1:8787
 ```
 
-账号行格式：
+Account line format:
 
 ```text
 email----password----client_id----refresh_token
 ```
 
-插件会调用本地服务的 Outlook 邮件接口等待验证码。没有本地服务时，可以使用单邮箱模式，验证码手动输入。
+The extension calls the local Outlook mail API and waits for the verification code. If the local service is not available, you can use single-email mode and enter the code manually.
 
-## 权限和匹配页面
+## Permissions and Matched Pages
 
-插件会注入以下页面：
+The extension is injected into the following pages:
 
 - `https://chatgpt.com/*`
 - `https://auth.openai.com/*`
@@ -135,20 +135,20 @@ email----password----client_id----refresh_token
 - `https://www.paypal.com/*`
 - `https://paypal.com/*`
 
-插件请求的 host permissions 包含：
+The requested host permissions include:
 
-- 本地 Outlook API：`127.0.0.1:8787`、`localhost:8787`
+- Local Outlook API: `127.0.0.1:8787`, `localhost:8787`
 - ChatGPT / OpenAI Auth / OpenAI Pay
 - PayPal
-- meiguodizhi 地址资料站点
-- GitHub Releases API：用于版本更新检查
+- The meiguodizhi address data site
+- GitHub Releases API for version update checks
 
-## 发布版本
+## Releasing
 
-后续如果上传到 GitHub，建议使用 GitHub Releases 发布版本：
+If you upload this project to GitHub later, it is recommended to publish releases through GitHub Releases:
 
-1. 修改 `package.json` 中的 `version`。
-2. 执行：
+1. Update the `version` field in `package.json`.
+2. Run:
 
 ```bash
 pnpm compile
@@ -156,31 +156,31 @@ pnpm build
 pnpm zip
 ```
 
-3. 在 GitHub Releases 中创建 `vX.Y.Z` 版本。
-4. 上传 `.output` 中生成的 zip 文件。
-5. 在 Release notes 写更新说明。
+3. Create a `vX.Y.Z` release in GitHub Releases.
+4. Upload the generated zip file from `.output`.
+5. Write the update notes in the release notes.
 
-插件会通过 GitHub Releases API 检测最新正式版。如果最新版本高于当前插件版本，会在插件顶部显示更新提示、下载地址和更新说明。设置页也提供“检测更新”按钮，可手动强制刷新版本检查。
+The extension checks the latest stable version through the GitHub Releases API. If the latest version is newer than the current extension version, an update notice, download link, and release notes are shown at the top of the extension. The settings page also provides a "Check for updates" button to force a manual refresh of the version check.
 
-## 项目结构
+## Project Structure
 
 ```text
 entrypoints/
-  background.ts          后台消息处理、Outlook 收码、checkout 创建
-  content.ts             内容脚本入口，挂载右侧插件面板和自动填写模块
+  background.ts          Background message handling, Outlook code fetching, checkout creation
+  content.ts             Content script entry that mounts the right-side extension panel and autofill modules
 src/
-  app/                   面板主框架、状态、样式
+  app/                   Main panel framework, state, and styles
   features/
-    register/            注册辅助
-    link-extractor/      Checkout 链接提取
-    address-autofill/    地址资料和支付页自动填写
-    version-check/       GitHub Release 版本检查和更新提示
-    sms/                 接码链接轮询和验证码历史
-    settings/            设置页和持久化设置
-scripts/                 本地调试脚本
-wxt.config.ts            WXT 和扩展 manifest 配置
+    register/            Registration helper
+    link-extractor/      Checkout link extraction
+    address-autofill/    Address profiles and payment-page autofill
+    version-check/       GitHub Release version checks and update prompts
+    sms/                 SMS link polling and verification code history
+    settings/            Settings page and persisted settings
+scripts/                 Local debugging scripts
+wxt.config.ts            WXT and extension manifest configuration
 ```
 
-## 注意
+## Notes
 
-本项目用于浏览器插件开发和流程辅助。支付页、第三方站点和 API 结构可能随时变化，自动填写选择器需要根据实际页面保持维护。
+This project is intended for browser extension development and workflow assistance. Payment pages, third-party sites, and API structures may change at any time, so autofill selectors need ongoing maintenance based on the actual pages.
