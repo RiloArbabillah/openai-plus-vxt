@@ -34,6 +34,7 @@ export function createLinkExtractorPanel(container: HTMLElement): FeaturePanelHa
   const regionSelect = createSelect(REGION_OPTIONS);
   const workspaceInput = createInput('Workspace name', 'text');
   const seatsInput = createInput('Seat count', 'number');
+  const promoCampaignInput = createInput('Promo campaign ID', 'text');
   seatsInput.min = '2';
   seatsInput.step = '1';
 
@@ -43,6 +44,8 @@ export function createLinkExtractorPanel(container: HTMLElement): FeaturePanelHa
   const uiModeField = createField('Link format', uiModeSelect);
   const regionField = createField('Billing region', regionSelect);
   mainGrid.append(planField, uiModeField, regionField);
+
+  const promoField = createField('Promo campaign', promoCampaignInput);
 
   const teamOptions = document.createElement('div');
   teamOptions.className = 'opx-team-options';
@@ -107,7 +110,7 @@ export function createLinkExtractorPanel(container: HTMLElement): FeaturePanelHa
     }
   };
 
-  for (const item of [planSelect, uiModeSelect, regionSelect, workspaceInput, seatsInput]) {
+  for (const item of [planSelect, uiModeSelect, regionSelect, workspaceInput, seatsInput, promoCampaignInput]) {
     item.addEventListener('change', () => void syncLinkOptions());
     item.addEventListener('input', () => void syncLinkOptions());
   }
@@ -192,6 +195,7 @@ export function createLinkExtractorPanel(container: HTMLElement): FeaturePanelHa
     sessionCard,
     refreshSessionButton,
     mainGrid,
+    promoField,
     teamOptions,
     tokenInput,
     tokenHint,
@@ -245,6 +249,7 @@ export function createLinkExtractorPanel(container: HTMLElement): FeaturePanelHa
     regionSelect.value = options.region;
     workspaceInput.value = options.workspaceName;
     seatsInput.value = String(options.seatQuantity);
+    promoCampaignInput.value = options.promoCampaignId;
     setLinkSummary(options);
   }
 
@@ -255,6 +260,7 @@ export function createLinkExtractorPanel(container: HTMLElement): FeaturePanelHa
       region: regionSelect.value,
       workspaceName: workspaceInput.value,
       seatQuantity: Number(seatsInput.value || 5),
+      promoCampaignId: promoCampaignInput.value,
     });
   }
 
@@ -262,7 +268,8 @@ export function createLinkExtractorPanel(container: HTMLElement): FeaturePanelHa
     const planText = options.planName === 'chatgptteamplan' ? `Team · ${options.seatQuantity} seats` : 'Plus';
     const modeText = options.uiMode === 'hosted' ? 'Long link hosted' : 'Short link custom';
     const sessionText = sessionFetchedOnce ? 'session loaded' : 'session pending';
-    linkSummary.textContent = `${planText} · ${modeText} · ${options.region} · ${sessionText}`;
+    const promoText = options.promoCampaignId ? `promo ${options.promoCampaignId}` : 'promo default';
+    linkSummary.textContent = `${planText} · ${modeText} · ${options.region} · ${promoText} · ${sessionText}`;
     teamOptions.hidden = options.planName !== 'chatgptteamplan';
     regionField.hidden = options.planName === 'chatgptteamplan';
   }

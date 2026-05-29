@@ -25,6 +25,7 @@ export const DEFAULT_CHECKOUT_OPTIONS: CheckoutOptions = {
   region: 'US',
   workspaceName: 'MyTeam',
   seatQuantity: 5,
+  promoCampaignId: '',
 };
 
 export function extractAccessToken(raw: string): string {
@@ -60,6 +61,7 @@ export function normalizeCheckoutOptions(value: unknown): CheckoutOptions {
     workspaceName: String(source.workspaceName || source.workspace_name || DEFAULT_CHECKOUT_OPTIONS.workspaceName).trim() ||
       DEFAULT_CHECKOUT_OPTIONS.workspaceName,
     seatQuantity: normalizeSeatQuantity(source.seatQuantity),
+    promoCampaignId: String(source.promoCampaignId || source.promo_campaign_id || '').trim(),
   };
 }
 
@@ -131,6 +133,7 @@ export async function createCheckoutLink(raw: string, optionsInput: unknown): Pr
 function buildCheckoutPayload(options: CheckoutOptions): Record<string, unknown> {
   const isPlus = options.planName === 'chatgptplusplan';
   const billingDetails = billingDetailsForRegion(options.region);
+  const promoCampaignId = options.promoCampaignId || (isPlus ? 'plus-1-month-free' : 'team-1-month-free');
 
   const payload: Record<string, unknown> = {
     entry_point: isPlus ? 'all_plans_pricing_modal' : 'team_workspace_purchase_modal',
@@ -139,7 +142,7 @@ function buildCheckoutPayload(options: CheckoutOptions): Record<string, unknown>
     cancel_url: 'https://chatgpt.com/#pricing',
     checkout_ui_mode: options.uiMode,
     promo_campaign: {
-      promo_campaign_id: isPlus ? 'plus-1-month-free' : 'team-1-month-free',
+      promo_campaign_id: promoCampaignId,
       is_coupon_from_query_param: false,
     },
   };

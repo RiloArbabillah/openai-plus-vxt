@@ -10,6 +10,7 @@ export interface CheckoutOptions {
   region: CheckoutRegion;
   workspaceName: string;
   seatQuantity: number;
+  promoCampaignId: string;
 }
 
 export interface LinkExtractorState {
